@@ -1,0 +1,32 @@
+int ledPin = 4;
+int BuzzerPin = 3;
+int SensorPin = 2;
+int motionDetected = LOW;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(ledPin, OUTPUT);
+  pinMode(SensorPin, INPUT);
+  pinMode(BuzzerPin, OUTPUT);
+  Serial.begin(9600);
+  delay(1000); 
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  motionDetected = digitalRead(SensorPin);
+  if (motionDetected == HIGH)
+  {
+    digitalWrite(ledPin, HIGH);
+    analogWrite(BuzzerPin, 200);
+    Serial.println('1');
+    delay(100);
+  }
+  else if (motionDetected == LOW)
+  {
+    digitalWrite(ledPin, LOW);
+    analogWrite(BuzzerPin, 0);
+    Serial.println('0');
+    delay(100);
+  }
+}

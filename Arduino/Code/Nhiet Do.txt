@@ -1,0 +1,73 @@
+#include <OneWire.h>
+#include <Wire.h>
+#include <DallasTemperature.h>
+#include <LiquidCrystal_I2C.h>
+#define ONE_WIRE_BUS A0
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+int upButtonPin = 10;
+int downButtonPin = 11;
+
+float temperature;
+float value = 0;
+int upButtonState = 0;
+int upLastButtonState = 0;
+int downButtonState = 0;
+int downLastButtonState = 0;
+
+void setup() {
+  Serial.begin(9600);
+  sensors.begin();
+
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+  lcd.print("Temperature C");
+  delay(1000);
+  lcd.clear();
+  lcd.print("Starting...");
+  delay(1000);
+  lcd.clear();
+
+  pinMode(upButtonPin, INPUT);
+  pinMode(downButtonPin, INPUT);
+}
+
+void loop() {
+  upButtonState = digitalRead(upButtonPin);
+  if (upButtonState != upLastButtonState) {
+    if (upButtonState == HIGH) {
+      value++;
+      Serial.println("Dang nhan: ");
+      Serial.println(value);
+    }
+  }
+  upLastButtonState = upButtonState;
+  
+  downButtonState = digitalRead(downButtonPin);
+  if (downButtonState != downLastButtonState) {
+    if (downButtonState == HIGH) {
+      value--;
+      Serial.println("Dang nhan: ");
+      Serial.println(value);
+    }
+  }
+  downLastButtonState = downButtonState; 
+  
+  sensors.requestTemperatures();
+  temperature = sensors.getTempCByIndex(0);
+  //Serial.println(temperature);
+  lcd.setCursor(0, 0);
+  lcd.print("Temp:");
+  lcd.setCursor(9, 0);
+  lcd.print(temperature);
+  lcd.print(" C");
+  lcd.setCursor(0, 1);
+  lcd.print("Number:");
+  lcd.setCursor(9, 1);
+  lcd.print(value);
+}
